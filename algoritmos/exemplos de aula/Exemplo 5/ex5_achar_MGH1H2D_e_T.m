@@ -34,15 +34,32 @@ H1 = H1aux*dq.^2;
 H2 = H-H1;
 
 % Deixando as matrizes visualmente melhores  
-M = simplify(M);
-G = simplify(G);
-H = simplify(H);
-H1 = simplify(H1);
-H2 = simplify(H2);
+M_symbolic = simplify(M);
+G_symbolic = simplify(G);
+H_symbolic = simplify(H);
+H1_symbolic = simplify(H1);
+H2_symbolic = simplify(H2);
 
 % Achando T separando Hs. A primeira e a segunda linha sao torques 
-T2 = M*d2q+H1+H2+G;
+T2 = M_symbolic*d2q+H1_symbolic+H2_symbolic+G_symbolic;
 
 % Deixando os Ts visualmente melhores (T1 tem que ser igual a T2) 
-T1 = simplify(T1)
-T2 = simplify(T2)
+T1_symbolic = simplify(T1)
+T2_symbolic = simplify(T2)
+
+
+%% Inicializando constantes
+g_num = 9.81;
+m1_num = 20;
+m2_num = 5;
+L1_num = 2;
+L2_num = .5;
+
+%% Atribuindo valores das constantes à equações
+M = subs(M_symbolic, [g,m1,m2,L1,L2], [g_num,m1_num,m2_num,L1_num,L2_num]);
+G = subs(G_symbolic, [g,m1,m2,L1,L2], [g_num,m1_num,m2_num,L1_num,L2_num]);
+H = subs(H_symbolic, [g,m1,m2,L1,L2], [g_num,m1_num,m2_num,L1_num,L2_num]);
+
+matlabFunctionBlock('simulacao_4_5/matriz_massa_M',M);
+matlabFunctionBlock('simulacao_4_5/gravidade_G',G);
+matlabFunctionBlock('simulacao_4_5/centrifuga_coriolis_H',H);
