@@ -1,13 +1,24 @@
-function colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao, indiceM1, indiceM2)
-%UNTITLED8 Summary of this function goes here
-%   Detailed explanation goes here
-    colunaJacobianoAngular = [0 0 0]';
-    indiceColuna = indiceM1;
-    if nargin == 3 && indiceM1 == -1
-        indiceColuna = indiceM2;    
+function colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao, indiceJacobianoAnterior, indiceJacobianoAtual)
+% extrairColunaJacobianoAngular - Extrai a coluna angular do Jacobiano a
+% partir de uma matriz de transformação homogênea.
+%
+% matrizTransformacao - Matriz de transformação de onde será extraída a coluna
+% indiceJacobianoAnterior - Índice da coluna anterior do Jacobiano
+% indiceJacobianoAtual - Índice atual da coluna do Jacobiano
+
+    % Verifica qual índice usar (anterior ou atual)
+    if indiceJacobianoAnterior == -1
+        indiceColuna = indiceJacobianoAtual;
+    else
+        indiceColuna = indiceJacobianoAnterior;
     end
+    
+    % Inicializa a coluna Jacobiano angular como vetor coluna nulo (3x1)
+    colunaJacobianoAngular = zeros(3, 1);
+    
+    % Se o índice for válido, extrai a coluna da matriz
     if indiceColuna ~= -1
-        colunaJacobianoAngular = matrizTransformacao(:,indiceColuna);
-        colunaJacobianoAngular(end,:) = [];
+        % Extrai as primeiras três linhas da coluna correspondente
+        colunaJacobianoAngular = matrizTransformacao(1:3, indiceColuna);
     end
 end

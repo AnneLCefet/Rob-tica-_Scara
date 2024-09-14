@@ -1,0 +1,63 @@
+function [JA_1_0, JA_2_0, JA_3_0, JA_4_0, T_1_0, T_2_0, T_3_0, T_4_0, P_1_0, P_2_0, P_3_0, P_4_0] = cinematicaDiretaSCARA(posicoesDasJuntas, elos)
+% cinematicaDiretaSCARA - Calcula a cinemática direta de um manipulador SCARA
+% utilizando uma sequência de transformações puras e rotações.
+%
+% posicoes - Posições relativas entre as juntas
+% elos - Vetor contendo os valores de ângulos ou translações dos elos
+%
+% Saídas:
+% JA_1_0, JA_2_0, JA_3_0, JA_4_0 - Colunas do Jacobiano Angular de cada etapa
+% T_1_0, T_2_0, T_3_0, T_4_0 - Matrizes de transformação homogênea entre os elos
+% P_1_0, P_2_0, P_3_0, P_4_0 - Posições finais de cada junta no sistema de coordenadas global
+    
+    % Inicializa variáveis de saída para as posições e matrizes de transformação
+    P = cell(4,1);
+    T = cell(4,1);
+    col_Ja = cell(4,1);
+
+    % Função auxiliar para extrair posições e matrizes de transformação
+    function [colunaJacobiano, T] = calcularTransformacao(elos, posicoes, idxElo, transformacaoAnterior)
+        translacao = TranslacaoPura(posicoes{idxElo}(1), posicoes{idxElo}(2), posicoes{idxElo}(3));
+        if idxElo == 1
+            rotacao = RotacaoPura('y', elos(1));  % Para o Elo 1
+            transformacoesPuras = {translacao, rotacao};
+        elseif idxElo == 2
+            rotacao = RotacaoPura('y', elos(2));  % Para o Elo 2
+            transformacoesPuras = {translacao, rotacao};
+        elseif idxElo == 4
+            rotacao = RotacaoPura('y', elos(4));  % Para o Elo 4
+            transformacoesPuras = {translacao, rotacao};
+        else
+            rotacao = eye(4);  % Elo 3 não tem rotação
+        end
+        
+        [colunaJacobiano, T] = transformacoesCombinadas(transformacaoAnterior, transformacoesPuras);
+    end
+
+    % Elo 1
+    [col_Ja{1}, T{1}] = calcularTransformacao(elos, posicoesDasJuntas, 1, eye(4));
+    P{1} = T{1}(1:3, end);
+
+    % Elo 2
+    [col_Ja{2}, T{2}] = calcularTransformacao(elos, posicoesDasJuntas, 2, T{1});
+    P{2} = T{2}(1:3, end);
+
+    % Elo 3
+    [col_Ja{3}, T{3}] = calcularTransformacao(elos, posicoesDasJuntas, 3, T{2});
+    P{3} = T{3}(1:3, end);
+
+    % Elo 4
+    [col_Ja{4}, T{4}] = calcularTransformacao(elos, posicoesDasJuntas, 4, T{3});
+    P{4} = T{4}(1:3, end);
+
+    % Montagem dos Jacobianos Angulares
+    JA_1_0 = [col_Ja{1} zeros(3,1) zeros(3,1) zeros(3,1)];
+    JA_2_0 = [col_Ja{1} col_Ja{2} zeros(3,1) zeros(3,1)];
+    JA_3_0 = [col_Ja{1} col_Ja{2} col_Ja{3} zeros(3,1)];
+    JA_4_0 = [col_Ja{1} col_Ja{2} col_Ja{3} col_Ja{4}];
+    
+    % Saídas das matrizes de transformação e posições
+    T_1_0 = T{1}; T_2_0 = T{2}; T_3_0 = T{3}; T_4_0 = T{4};
+    P_1_0 = P{1}; P_2_0 = P{2}; P_3_0 = P{3}; P_4_0 = P{4};
+
+end

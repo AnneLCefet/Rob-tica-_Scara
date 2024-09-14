@@ -1,21 +1,39 @@
-function [colunaJacobianoAngular,matrizTransformacao] = transformacoesCombinadas(matrizTransformacaoAnterior, transformacao1, transformacao2)
-%UNTITLED Summary of this function goes here
-%   Detailed explanation goes here
-    [indiceM1,matriz1] = processarTransformacaoPura(transformacao1);
-    if nargin == 2 && ~isequal(matrizTransformacaoAnterior,zeros(4))
-        matrizTransformacao = matrizTransformacaoAnterior*matriz1;
-        colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao,indiceM1);
-    elseif nargin == 2 && isequal(matrizTransformacaoAnterior,zeros(4))
-        matrizTransformacao = matriz1;
-        colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao,indiceM1);
-    elseif isequal(matrizTransformacaoAnterior,zeros(4))
-        [indiceM2,matriz2] = processarTransformacaoPura(transformacao2);
-        matrizTransformacao = matriz1*matriz2;
-        colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao,indiceM1,indiceM2);
-    else
-        [indiceM2,matriz2] = processarTransformacaoPura(transformacao2);
-        matrizTransformacao = matrizTransformacaoAnterior*matriz1*matriz2;
-        colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao,indiceM1,indiceM2);
+function [colunaJacobianoAngular, matrizTransformacao] = transformacoesCombinadas(matrizTransformacaoAnterior, transformacoesPuras)
+    % transformacoesCombinadas - Aplica uma série de transformações puras e
+    % extrai a coluna angular do Jacobiano após cada transformação.
+    %
+    % Entradas:
+    % matrizTransformacaoAnterior - A matriz de transformação anterior, que será
+    % usada como ponto de partida.
+    % transformacoesPuras - Um array de transformações puras que serão aplicadas
+    % sequencialmente.
+    %
+    % Saídas:
+    % colunaJacobianoAngular - A última coluna angular do Jacobiano extraída.
+    % matrizTransformacao - A matriz de transformação final após todas as
+    % transformações.
+    
+    % Inicializa a matriz de transformação com a anterior
+    matrizTransformacao = matrizTransformacaoAnterior;
+    
+    % Inicializa o índice Jacobiano anterior como -1 (indicando inválido)
+    indiceJacobianoAnterior = -1;
+    
+    % Inicializa a coluna Jacobiano angular como vetor nulo (3x1)
+    colunaJacobianoAngular = zeros(3, 1);
+    
+    % Itera sobre as transformações puras
+    for i = 1:numel(transformacoesPuras)
+        % Processa a transformação pura atual
+        [indiceJacobianoAtual, matriz] = processarTransformacaoPura(transformacoesPuras{i});
+        
+        % Atualiza a matriz de transformação combinada
+        matrizTransformacao = matrizTransformacao * matriz;
+        
+        % Extrai a coluna angular do Jacobiano com base na matriz de transformação
+        colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao, indiceJacobianoAnterior, indiceJacobianoAtual);
+        
+        % Atualiza o índice Jacobiano anterior para a próxima iteração
+        indiceJacobianoAnterior = indiceJacobianoAtual;
     end
 end
-
