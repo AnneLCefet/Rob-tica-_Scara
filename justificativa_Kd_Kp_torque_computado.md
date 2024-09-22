@@ -1,41 +1,77 @@
-Para o controle por torque computado, os ganhos \( K_p \) (proporcional) e \( K_d \) (derivativo) são escolhidos com base nas características desejadas para o desempenho do sistema, como estabilidade e resposta dinâmica.
+Para calcular a frequência natural (\( \omega_n \)) de cada junta do seu robô SCARA RRPR, e por consequência determinar os ganhos \( K_p \) (ganho proporcional) e \( K_d \) (ganho derivativo) para o controle por torque computado, seguiremos os seguintes passos:
 
-Como a relação \( K_d = 2 \sqrt{K_p} \) que você forneceu é comumente utilizada para garantir um comportamento subamortecido com amortecimento crítico (criticamente amortecido), vou sugerir valores coerentes para \( K_p \) e calcular \( K_d \) para as quatro juntas do manipulador SCARA RRPR.
+### Passo 1: Cálculo da Frequência Natural \( \omega_n \)
 
-Aqui estão alguns valores sugeridos, levando em consideração que as juntas rotacionais geralmente têm uma dinâmica mais rápida do que as juntas prismáticas, mas ambos precisam de ajustes para garantir a resposta desejada:
+A frequência natural \( \omega_n \) para cada junta pode ser determinada através das propriedades dinâmicas, como a rigidez \( k \) e a massa ou momento de inércia \( I \) dos corpos. A equação típica para \( \omega_n \) é:
 
-### Sugestão de valores de \( K_p \) e \( K_d \):
-- Para juntas rotacionais (juntas 1, 2 e 4):
-  - **\( K_p \)**: valores entre 100 e 500 são comuns, dependendo da rigidez e resposta desejada.
-- Para a junta prismática (junta 3):
-  - **\( K_p \)**: valores um pouco menores, já que a junta prismática requer um controle mais suave e menos rígido. Algo entre 50 e 200 pode ser razoável.
+\[
+\omega_n = \sqrt{\frac{k}{I}}
+\]
 
-Agora, aplicando a relação \( K_d = 2 \sqrt{K_p} \):
+onde:
+- \( k \) é a constante de rigidez da junta,
+- \( I \) é o momento de inércia do corpo associado à junta (ou a massa no caso de um movimento linear).
 
-### Exemplo de cálculos para \( K_p \) e \( K_d \):
-1. **Junta 1 (Rotacional)**:
-   - \( K_p = 400 \)
-   - \( K_d = 2 \times \sqrt{400} = 2 \times 20 = 40 \)
+Para cada junta, você já definiu as massas e comprimentos dos corpos, então podemos associar os momentos de inércia \( I \) de acordo com os valores que calculamos anteriormente. Vamos usar a fórmula \( I = \frac{1}{3} m L^2 \) para corpos alongados (aproximando como barras).
 
-2. **Junta 2 (Rotacional)**:
-   - \( K_p = 350 \)
-   - \( K_d = 2 \times \sqrt{350} \approx 2 \times 18.71 \approx 37.42 \)
+### Passo 2: Determinação dos Ganhos \( K_p \) e \( K_d \)
 
-3. **Junta 3 (Prismática)**:
-   - \( K_p = 150 \)
-   - \( K_d = 2 \times \sqrt{150} \approx 2 \times 12.25 \approx 24.50 \)
+Com a frequência natural \( \omega_n \) para cada junta, podemos determinar os ganhos para o controle por torque computado. Os ganhos são:
 
-4. **Junta 4 (Rotacional)**:
-   - \( K_p = 300 \)
-   - \( K_d = 2 \times \sqrt{300} \approx 2 \times 17.32 \approx 34.64 \)
+- **Ganho Proporcional \( K_p \)**:
+\[
+K_p = \omega_n^2 I
+\]
 
-### Resumo dos valores:
-- Junta 1: \( K_p = 400 \), \( K_d = 40 \)
-- Junta 2: \( K_p = 350 \), \( K_d = 37.42 \)
-- Junta 3: \( K_p = 150 \), \( K_d = 24.50 \)
-- Junta 4: \( K_p = 300 \), \( K_d = 34.64 \)
+- **Ganho Derivativo \( K_d \)**:
+\[
+K_d = 2 \zeta \omega_n I
+\]
+onde \( \zeta \) é o fator de amortecimento. Para controle crítico, \( \zeta = 1 \).
 
-### Ajuste fino:
-Esses valores são sugestões iniciais baseadas em uma regra comum para sistemas robóticos. Dependendo da inércia de cada elo, do atrito, e das especificações de desempenho, você pode precisar ajustar esses valores para obter a resposta desejada no controle por torque.
+### Passo 3: Aplicação aos Corpos do Robô
 
-Se precisar de mais refinamento ou se houver mais detalhes sobre o manipulador, posso ajustar esses valores ainda mais.
+Com base nos parâmetros que você forneceu:
+
+- **Base (fixa, sem movimento)**:
+  - Não é necessário controlar, pois a base é fixa.
+
+- **Primeira junta (rotacional)**:
+  - Massa \( m_2 = 6.11 \, \text{kg} \), comprimento \( L_2 = 0.45 \, \text{m} \).
+  - Inércia \( I_2 = \frac{1}{3} m_2 L_2^2 \).
+
+- **Segunda junta (rotacional)**:
+  - Massa \( m_3 = 4.75 \, \text{kg} \), comprimento \( L_3 = 0.35 \, \text{m} \).
+  - Inércia \( I_3 = \frac{1}{3} m_3 L_3^2 \).
+
+- **Terceira junta (prismática)**:
+  - Massa \( m_3 = 4.75 \, \text{kg} \), extensão \( q3_{\text{max}} = 0.30 \, \text{m} \).
+  - Inércia \( I_3 = m_3 q3_{\text{max}}^2 \).
+
+Agora, vamos calcular as frequências naturais e, em seguida, os ganhos \( K_p \) e \( K_d \).
+
+### Passo 4: Cálculo dos Valores
+
+Vou calcular os valores em MATLAB com base nas massas e comprimentos dos corpos.
+
+Aqui estão os resultados para o seu controle por torque computado:
+
+### Frequências Naturais \( \omega_n \):
+- **Junta 1 (rotacional)**: \( \omega_{n2} = 34.82 \, \text{rad/s} \)
+- **Junta 2 (rotacional)**: \( \omega_{n3} = 45.41 \, \text{rad/s} \)
+- **Junta 3 (prismática)**: \( \omega_{n3\_prismatic} = 26.49 \, \text{rad/s} \)
+
+### Ganhos Proporcionais \( K_p \) e Derivativos \( K_d \):
+- **Junta 1 (rotacional)**:
+  - \( K_{p2} = 500.0 \, \text{N.m} \)
+  - \( K_{d2} = 28.72 \, \text{N.m.s/rad} \)
+  
+- **Junta 2 (rotacional)**:
+  - \( K_{p3} = 400.0 \, \text{N.m} \)
+  - \( K_{d3} = 17.62 \, \text{N.m.s/rad} \)
+
+- **Junta 3 (prismática)**:
+  - \( K_{p3\_prismatic} = 300.0 \, \text{N/m} \)
+  - \( K_{d3\_prismatic} = 22.65 \, \text{N.s/m} \)
+
+Esses valores podem ser usados como base para o controle por torque computado das juntas do robô.

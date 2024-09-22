@@ -7,10 +7,10 @@ classdef TranslacaoPura
     end
 
     methods
-        function obj = TranslacaoPura(deslocamentoEixoX,deslocamentoEixoY,deslocamentoEixoZ)
+        function obj = TranslacaoPura(vetorDeslocamento)
             %UNTITLED3 Construct an instance of this class
             %   Detailed explanation goes here
-            obj.MatrizTranslacao = [[eye(3), [deslocamentoEixoX deslocamentoEixoY deslocamentoEixoZ]']; [0 0 0 1]];
+            obj.MatrizTranslacao = [[eye(3), vetorDeslocamento]; [0 0 0 1]];
         end
     end
     
