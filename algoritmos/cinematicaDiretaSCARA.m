@@ -1,4 +1,4 @@
-    function [JA_1_0, JA_2_0, JA_3_0, JA_4_0, T_1_0, T_2_0, T_3_0, T_4_0, P_1_0, P_2_0, P_3_0, P_4_0] = cinematicaDiretaSCARA(P_1, P_2, P_3, elos)
+    function [JA_1_0, JA_2_0, JA_3_0, JA_4_0, T_1_0, T_2_0, T_3_0, T_4_0, T_5_0, P_1_0, P_2_0, P_3_0, P_4_0, P_5_0] = cinematicaDiretaSCARA(P_1, P_2, P_3, P_5, elos)
     % DIRETA_SCARA .......
     % RRPR
     q1 = elos(1);
@@ -32,11 +32,11 @@
     [col_Ja_4, T_4_0] = transformacoesCombinadas(T_3_0,transformacoesPuras_4_3);
     P_4_0 = T_4_0(1:3, 4);
     
-    % %% {5} Ferramenta:
-    % D_5_4_P5 = TranslacaoPura(P_5);
-    % transformacoesPuras_5_4 = {D_5_4_P5};
-    % [col_Ja_5, T_5_0] = transformacoesCombinadas(T_4_0,transformacoesPuras_5_4);
-    % P_5_0 = T_5_0(1:3, 4);
+    %% {5} Ferramenta:
+    D_5_4_P5 = TranslacaoPura(P_5);
+    transformacoesPuras_5_4 = {D_5_4_P5};
+    [col_Ja_5, T_5_0] = transformacoesCombinadas(T_4_0,transformacoesPuras_5_4);
+    P_5_0 = T_5_0(1:3, 4);
     
     %% Matrizes de jacobiano angular
     JA_1_0 = [col_Ja_1 zeros(3,1) zeros(3,1) zeros(3,1)];
