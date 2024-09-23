@@ -28,7 +28,7 @@ function [colunaJacobianoAngular, matrizTransformacao] = transformacoesCombinada
         [indiceJacobianoAtual, matriz] = processarTransformacaoPura(transformacoesPuras{i});
         
         % Atualiza a matriz de transformação combinada
-        matrizTransformacao = simplify(matrizTransformacao * matriz);
+        matrizTransformacao = matrizTransformacao * matriz;
         
         % Extrai a coluna angular do Jacobiano com base na matriz de transformação
         colunaJacobianoAngular = extrairColunaJacobianoAngular(matrizTransformacao, indiceJacobianoAnterior, indiceJacobianoAtual);
